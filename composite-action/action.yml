@@ -1,0 +1,78 @@
+name: "Plesk Deployer"
+description: "Deploy applications to Plesk via SCP"
+inputs:
+  ssh-private-key:
+    description: "SSH private key for authentication"
+    required: true
+  ftp-username:
+    description: "FTP username for Plesk server"
+    required: true
+  ftp-server:
+    description: "FTP server address"
+    required: true
+  files-to-copy:
+    description: "Files or directories to copy to the server"
+    required: true
+  remote-dir:
+    description: "Remote directory to copy files to"
+    required: false
+    default: "/httpdocs"
+  node-version:
+    description: "Node version running your project in plesk"
+    required: false
+    default: "20"
+  npm-install:
+    description: "Whether to run npm install"
+    required: false
+    default: "true"
+  restart:
+    description: "Whether to restart the application"
+    required: false
+    default: "true"
+  clean-remote-dir:
+    description: "Whether to clean the remote directory before deployment"
+    required: false
+    default: "false"
+outputs:
+  deployment-status:
+    description: "Status of the deployment"
+    value: ${{ steps.deploy-to-plesk.outcome }}
+runs:
+  using: "composite"
+  steps:
+    - name: Setup SSH
+      uses: webfactory/ssh-agent@v0.8.0
+      with:
+        ssh-private-key: ${{ inputs.ssh-private-key }}
+
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Add server to known hosts
+      run: |
+        ssh-keyscan -H ${{ inputs.ftp-server }} >> ~/.ssh/known_hosts
+      shell: bash
+
+    - name: Clean remote directory
+      if: ${{ inputs.clean-remote-dir == 'true' }}
+      run: |
+        ssh ${{ inputs.ftp-username }}@${{ inputs.ftp-server }} 'rm -rf ${{ inputs.remote-dir }}/*'
+      shell: bash
+
+    - name: Deploy to Plesk
+      id: deploy-to-plesk
+      run: |
+        scp -o StrictHostKeyChecking=yes -r ${{ inputs.files-to-copy }} ${{ inputs.ftp-username }}@${{ inputs.ftp-server }}:${{ inputs.remote-dir }}
+      shell: bash
+
+    - name: Install npm dependencies
+      if: ${{ inputs.npm-install == 'true' }}
+      run: |
+        ssh ${{ inputs.ftp-username }}@${{ inputs.ftp-server }} 'export PATH=$PATH:/opt/plesk/node/${{ inputs.node-version }}/bin && cd ${{ inputs.remote-dir }} && npm ci'
+      shell: bash
+
+    - name: Restart application
+      if: ${{ inputs.restart == 'true' }}
+      run: |
+        ssh ${{ inputs.ftp-username }}@${{ inputs.ftp-server }} 'cd ${{ inputs.remote-dir }} && touch tmp/restart.txt'
+      shell: bash
