@@ -49,7 +49,7 @@ jobs:
         run: npm run build
 
       - name: Deploy to Plesk
-        uses: your-org/plesk-deployer-action@v1
+        uses: celleb/plesk-deployer@v1
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
           ftp-username: ${{ vars.FTP_USERNAME }}

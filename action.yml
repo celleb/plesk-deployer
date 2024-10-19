@@ -45,9 +45,6 @@ runs:
       with:
         ssh-private-key: ${{ inputs.ssh-private-key }}
 
-    - name: Checkout code
-      uses: actions/checkout@v3
-
     - name: Add server to known hosts
       run: |
         ssh-keyscan -H ${{ inputs.ftp-server }} >> ~/.ssh/known_hosts
