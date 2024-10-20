@@ -45,7 +45,7 @@ jobs:
           node-version: 20.x
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Build application
         run: npm run build
@@ -123,7 +123,7 @@ jobs:
    - Make sure that Node.js and the specified version are installed and enabled for your domain in Plesk. You can check this in the Plesk panel under **Websites & Domains** > **Node.js**.
 
 3. **Check Passenger Logs:**
-   - If your application is not starting correctly, check the Passenger logs for errors. These logs can provide insights into what might be going wrong. Logs are typically located in the `/var/log/passenger/passenger.log` directory of your domain or accessible via the Plesk panel.
+   - If your application is not starting correctly, check the Passenger logs for errors. These logs can provide insights into what might be going wrong. Logs are typically located in the `/var/log/passenger/passenger.log` directory of your domain or accessible via the Plesk panel. You stream the logs to the console with `tail -f /var/log/passenger/passenger.log`
 
 ## Contributing
 
