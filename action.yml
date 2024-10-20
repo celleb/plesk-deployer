@@ -1,5 +1,8 @@
 name: "Plesk Deployer"
-description: "Deploy applications to Plesk via SCP"
+description: "Deploy applications and resources to a Plesk server via SCP"
+branding:
+  icon: arrow-up-circle
+  color: gray-dark
 inputs:
   ssh-private-key:
     description: "SSH private key for authentication"
