@@ -1,0 +1,30 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy to Plesk
+        uses: celleb/plesk-deployer@main
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          ftp-username: ${{ vars.FTP_USERNAME }}
+          ftp-server: ${{ vars.FTP_SERVER }}
+          files-to-copy: "./README.md"
+          remote-dir: "./deployer"
+          node-version: 20
+          npm-install: false
+          restart: true
+          clean-remote-dir: false

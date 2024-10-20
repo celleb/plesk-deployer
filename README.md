@@ -1,5 +1,7 @@
 # Plesk Deployer Action
 
+[![test](https://github.com/celleb/plesk-deployer/actions/workflows/test.yml/badge.svg)](https://github.com/celleb/plesk-deployer/actions/workflows/test.yml)
+
 This GitHub Action deploys applications to a Plesk server using SCP. If your project is using Node.js, this action will also install dependencies and restart the application.
 
 ## Inputs
