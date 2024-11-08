@@ -28,7 +28,7 @@ inputs:
     description: "Package manager to use (npm or yarn)"
     default: "npm"
     required: false
-  install-dependencies:
+  npm-install:
     description: "Whether to install dependencies"
     required: false
     default: "true"
@@ -70,7 +70,7 @@ runs:
       shell: bash
 
     - name: Install dependencies
-      if: ${{ inputs.install-dependencies == 'true' }}
+      if: ${{ inputs.npm-install == 'true' }}
       run: |
         if [ "${{ inputs.package-manager }}" == "npm" ]; then
           ssh ${{ inputs.ftp-username }}@${{ inputs.ftp-server }} 'export PATH=$PATH:/opt/plesk/node/${{ inputs.node-version }}/bin && cd ${{ inputs.remote-dir }} && npm ci'
