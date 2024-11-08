@@ -24,8 +24,12 @@ inputs:
     description: "Node version running your project in plesk"
     required: false
     default: "20"
-  npm-install:
-    description: "Whether to run npm install"
+  package-manager:
+    description: "Package manager to use (npm or yarn)"
+    default: "npm"
+    required: false
+  install-dependencies:
+    description: "Whether to install dependencies"
     required: false
     default: "true"
   restart:
@@ -65,10 +69,17 @@ runs:
         scp -o StrictHostKeyChecking=yes -r ${{ inputs.files-to-copy }} ${{ inputs.ftp-username }}@${{ inputs.ftp-server }}:${{ inputs.remote-dir }}
       shell: bash
 
-    - name: Install npm dependencies
-      if: ${{ inputs.npm-install == 'true' }}
+    - name: Install dependencies
+      if: ${{ inputs.install-dependencies == 'true' }}
       run: |
-        ssh ${{ inputs.ftp-username }}@${{ inputs.ftp-server }} 'export PATH=$PATH:/opt/plesk/node/${{ inputs.node-version }}/bin && cd ${{ inputs.remote-dir }} && npm ci'
+        if [ "${{ inputs.package-manager }}" == "npm" ]; then
+          ssh ${{ inputs.ftp-username }}@${{ inputs.ftp-server }} 'export PATH=$PATH:/opt/plesk/node/${{ inputs.node-version }}/bin && cd ${{ inputs.remote-dir }} && npm ci'
+        elif [ "${{ inputs.package-manager }}" == "yarn" ]; then
+          ssh ${{ inputs.ftp-username }}@${{ inputs.ftp-server }} 'export PATH=$PATH:/opt/plesk/node/${{ inputs.node-version }}/bin && cd ${{ inputs.remote-dir }} && yarn install --frozen-lockfile'
+        else
+          echo "Invalid package manager specified. Use 'npm' or 'yarn'."
+          exit 1
+        fi
       shell: bash
 
     - name: Restart application
