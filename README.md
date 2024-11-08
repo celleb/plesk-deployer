@@ -21,6 +21,11 @@ This GitHub Action deploys applications to a Plesk server using SCP. If your pro
 
 - `deployment-status`: Status of the deployment.
 
+## Versions
+
+- `v1.1`: Supports choosing which package manager to use (`npm` or `yarn`).
+- `v1`: First release.
+
 ## Example Usage
 
 Here's an example of how to use the Plesk Deployer Action in a GitHub Actions workflow with npm:
@@ -52,7 +57,7 @@ jobs:
         run: npm run build
 
       - name: Deploy to Plesk
-        uses: celleb/plesk-deployer@v1
+        uses: celleb/plesk-deployer@v1.1
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
           ftp-username: ${{ vars.FTP_USERNAME }}
@@ -60,7 +65,6 @@ jobs:
           files-to-copy: "./dist ./package.json ./package-lock.json"
           remote-dir: "./httpdocs"
           node-version: 20
-          package-manager: npm
           npm-install: true
           restart: true
           clean-remote-dir: true
@@ -95,7 +99,7 @@ jobs:
         run: yarn build
 
       - name: Deploy to Plesk
-        uses: celleb/plesk-deployer@v1
+        uses: celleb/plesk-deployer@v1.1
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
           ftp-username: ${{ vars.FTP_USERNAME }}
