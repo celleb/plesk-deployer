@@ -12,9 +12,10 @@ This GitHub Action deploys applications to a Plesk server using SCP. If your pro
 - `files-to-copy`: **Required**. Files or directories to copy to the server.
 - `remote-dir`: **Optional**. Remote directory to copy files to. Defaults to `/httpdocs`.
 - `node-version`: **Optional**. Node.js version to use. Defaults to `20`.
-- `npm-install`: **Optional**. Whether to run `npm install`. Defaults to `true`.
+- `package-manager`: **Optional**. Package manager to use (`npm` or `yarn`). Defaults to `npm`.
+- `npm-install`: **Optional**. Whether to install dependencies. Defaults to `true`.
 - `restart`: **Optional**. Whether to restart the application. Defaults to `true`.
-- `clean-remote-dir`: **Optional**. Whether to clean the remote directory before deployment. Defaults to `true`.
+- `clean-remote-dir`: **Optional**. Whether to clean the remote directory before deployment. Defaults to `false`.
 
 ## Outputs
 
@@ -22,7 +23,7 @@ This GitHub Action deploys applications to a Plesk server using SCP. If your pro
 
 ## Example Usage
 
-Here's an example of how to use the Plesk Deployer Action in a GitHub Actions workflow:
+Here's an example of how to use the Plesk Deployer Action in a GitHub Actions workflow with npm:
 
 ```yaml
 name: Deploy to Plesk
@@ -59,6 +60,50 @@ jobs:
           files-to-copy: "./dist ./package.json ./package-lock.json"
           remote-dir: "./httpdocs"
           node-version: 20
+          package-manager: npm
+          npm-install: true
+          restart: true
+          clean-remote-dir: true
+```
+
+And here's an example using Yarn:
+
+```yaml
+name: Deploy to Plesk
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20.x
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Build application
+        run: yarn build
+
+      - name: Deploy to Plesk
+        uses: celleb/plesk-deployer@v1
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          ftp-username: ${{ vars.FTP_USERNAME }}
+          ftp-server: ${{ vars.FTP_SERVER }}
+          files-to-copy: "./dist ./package.json ./yarn.lock"
+          remote-dir: "./httpdocs"
+          node-version: 20
+          package-manager: yarn
           npm-install: true
           restart: true
           clean-remote-dir: true
