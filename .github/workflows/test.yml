@@ -20,8 +20,8 @@ jobs:
         uses: celleb/plesk-deployer@main
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-          ftp-username: ${{ vars.FTP_USERNAME }}
-          ftp-server: ${{ vars.FTP_SERVER }}
+          ftp-username: ${{ secrets.FTP_USERNAME }}
+          ftp-server: ${{ secrets.FTP_SERVER }}
           files-to-copy: "./README.md"
           remote-dir: "./deployer"
           node-version: 20
