@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.2 - 2024-12-20
+
+### Changed
+
+- Updated the default remote directory to `/` (root) instead of `/httpdocs` which is public by default.
+
 ## v1.1 - 2024-11-08
 
 ### Added

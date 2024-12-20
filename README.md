@@ -10,7 +10,7 @@ This GitHub Action deploys applications to a Plesk server using SCP. If your pro
 - `ftp-username`: **Required**. FTP username for the Plesk server.
 - `ftp-server`: **Required**. FTP server address.
 - `files-to-copy`: **Required**. Files or directories to copy to the server.
-- `remote-dir`: **Optional**. Remote directory to copy files to. Defaults to `/httpdocs`.
+- `remote-dir`: **Optional**. Remote directory to copy files to. Defaults to `/`.
 - `node-version`: **Optional**. Node.js version to use. Defaults to `20`.
 - `package-manager`: **Optional**. Package manager to use (`npm` or `yarn`). Defaults to `npm`.
 - `npm-install`: **Optional**. Whether to install dependencies. Defaults to `true`.

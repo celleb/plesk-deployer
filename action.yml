@@ -19,7 +19,7 @@ inputs:
   remote-dir:
     description: "Remote directory to copy files to"
     required: false
-    default: "/httpdocs"
+    default: "/"
   node-version:
     description: "Node version running your project in plesk"
     required: false
