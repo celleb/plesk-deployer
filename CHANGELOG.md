@@ -1,5 +1,11 @@
 # Changelog
 
+## v1.3 - 2026-11-08
+
+### Added
+
+- `ship-node-modules` input: installs production dependencies on the runner, uploads them and swaps them in on the server, for servers with too little memory for `npm ci`.
+
 ## v1.2 - 2024-12-20
 
 ### Changed

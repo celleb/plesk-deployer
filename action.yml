@@ -29,9 +29,13 @@ inputs:
     default: "npm"
     required: false
   npm-install:
-    description: "Whether to install dependencies"
+    description: "Whether to install dependencies on the server"
     required: false
     default: "true"
+  ship-node-modules:
+    description: "Install production dependencies on the runner and upload them, instead of installing on the server (for servers with little memory). Replaces npm-install."
+    required: false
+    default: "false"
   restart:
     description: "Whether to restart the application"
     required: false
@@ -69,8 +73,33 @@ runs:
         scp -o StrictHostKeyChecking=yes -r ${{ inputs.files-to-copy }} ${{ inputs.ftp-username }}@${{ inputs.ftp-server }}:${{ inputs.remote-dir }}
       shell: bash
 
+    - name: Build production dependencies
+      if: ${{ inputs.ship-node-modules == 'true' }}
+      run: |
+        STAGE="$(mktemp -d)"
+        if [ "${{ inputs.package-manager }}" == "npm" ]; then
+          cp package.json package-lock.json "$STAGE"/
+          (cd "$STAGE" && npm ci --omit=dev --no-audit --no-fund)
+        elif [ "${{ inputs.package-manager }}" == "yarn" ]; then
+          cp package.json yarn.lock "$STAGE"/
+          (cd "$STAGE" && yarn install --production --frozen-lockfile)
+        else
+          echo "Invalid package manager specified. Use 'npm' or 'yarn'."
+          exit 1
+        fi
+        tar czf "$RUNNER_TEMP/node_modules.tgz" -C "$STAGE" node_modules
+      shell: bash
+
+    - name: Upload and swap in dependencies
+      if: ${{ inputs.ship-node-modules == 'true' }}
+      run: |
+        scp -o StrictHostKeyChecking=yes "$RUNNER_TEMP/node_modules.tgz" ${{ inputs.ftp-username }}@${{ inputs.ftp-server }}:${{ inputs.remote-dir }}/node_modules.tgz
+        # unpack beside the live folder, then swap, so the app never sees a half-installed node_modules
+        ssh ${{ inputs.ftp-username }}@${{ inputs.ftp-server }} 'cd ${{ inputs.remote-dir }} && rm -rf node_modules.new node_modules.old && mkdir node_modules.new && tar xzf node_modules.tgz -C node_modules.new --strip-components=1 && rm node_modules.tgz && if [ -d node_modules ]; then mv node_modules node_modules.old; fi && mv node_modules.new node_modules && rm -rf node_modules.old'
+      shell: bash
+
     - name: Install dependencies
-      if: ${{ inputs.npm-install == 'true' }}
+      if: ${{ inputs.npm-install == 'true' && inputs.ship-node-modules != 'true' }}
       run: |
         if [ "${{ inputs.package-manager }}" == "npm" ]; then
           ssh ${{ inputs.ftp-username }}@${{ inputs.ftp-server }} 'export PATH=$PATH:/opt/plesk/node/${{ inputs.node-version }}/bin && cd ${{ inputs.remote-dir }} && npm ci'

@@ -1,0 +1,7 @@
+{
+  "name": "plesk-deployer-fixture",
+  "private": true,
+  "dependencies": {
+    "ms": "2.1.3"
+  }
+}

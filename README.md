@@ -14,6 +14,7 @@ This GitHub Action deploys applications to a Plesk server using SCP. If your pro
 - `node-version`: **Optional**. Node.js version to use. Defaults to `20`.
 - `package-manager`: **Optional**. Package manager to use (`npm` or `yarn`). Defaults to `npm`.
 - `npm-install`: **Optional**. Whether to install dependencies. Defaults to `true`.
+- `ship-node-modules`: **Optional**. Install production dependencies on the runner and upload them instead of installing on the server. Use it when the server has too little memory for `npm ci`. Replaces `npm-install`. Run `actions/setup-node` first, with the Node.js version the server runs. Defaults to `false`.
 - `restart`: **Optional**. Whether to restart the application. Defaults to `true`.
 - `clean-remote-dir`: **Optional**. Whether to clean the remote directory before deployment. Defaults to `false`.
 
